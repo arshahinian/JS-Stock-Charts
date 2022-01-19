@@ -12,6 +12,9 @@ async function main() {
     const { GME, MSFT, DIS, BNTX } = result;
 
     const stocks = [GME, MSFT, DIS, BNTX];
+
+    console.log(getCustomArray(stocks));
+
     var myChart =new Chart(timeChartCanvas.getContext('2d'), {
         type: 'line',
         data: {
@@ -25,19 +28,45 @@ async function main() {
         }
     });
 
-    // var myChart2 =new Chart(highestPriceChartCanvas.getContext('2d'), {
-    //     type: 'bar',
-    //     data: {
-    //         labels: stocks[0].map(value => this.name),
-    //         datasets: stocks.map( stock => ({
-    //             label: stock.meta.symbol,
-    //             data: stock.values.map(value => parseFloat(value.high)),
-    //             backgroundColor:  getColor(stock.meta.symbol),
-    //             borderColor: getColor(stock.meta.symbol),
-    //         }))
-    //     }
-    // });
+    var myChart2 = new Chart(highestPriceChartCanvas.getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: stocks.map( stock2 => stock2.meta.symbol),
+            datasets: getCustomArray(stocks)
+        }
+    });
 }
+function getCustomArray(myStocks)
+{
+    let myArray = new Array();
+    let priceArray = new Array();
+    let colorArray = new Array();
+
+    for(let i = 0; i < myStocks.length;i++)
+    {
+        let maxHigh = parseFloat(0);
+        for(let j = 0;j < myStocks[i].values.length;j++)
+        {        
+            if (parseFloat(myStocks[i].values[j].high) > parseFloat(maxHigh))
+            {
+                maxHigh = parseFloat(myStocks[i].values[j].high);
+            }
+        }
+        console.log(maxHigh);
+        priceArray.push(parseFloat(maxHigh))
+        colorArray.push(getColor(myStocks[i].meta.symbol))
+          
+    }
+    myArray.push({
+        label: 'Highest',
+        data:  priceArray,
+        backgroundColor:  colorArray,
+        borderColor: colorArray
+        }) 
+    return myArray;
+}
+
+
 function getColor(stock){
     if(stock === "GME"){
         return 'rgba(61, 161, 61, 0.7)'
@@ -52,5 +81,6 @@ function getColor(stock){
         return 'rgba(166, 43, 158, 0.7)'
     }
 }
+
 
 main()
